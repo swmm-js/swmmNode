@@ -47,11 +47,34 @@ static SUBCATCHMENT_OUTPUT_VARIABLE_COUNT: number = 8
 static NODE_OUTPUT_VARIABLE_COUNT: number = 6
 static LINK_OUTPUT_VARIABLE_COUNT: number = 5
 static SYSTEM_OUTPUT_VARIABLE_COUNT: number = 15
-static SUBCATCH = 1
-static NODE = 2
-static LINK = 3  
-static SYS = 4   
-static POLLUT = 5
+// Assigned 'enum' values for working with results
+static SUBCATCH:number = 1
+static NODE:number = 2
+static LINK:number = 3  
+static SYS:number = 4   
+static POLLUT:number = 5
+// SUBCATCH result type enums
+static SUBCATCH_RAINFALL:number = 0
+static SUBCATCH_SNOWDEPTH:number = 1
+static SUBCATCH_EVAP:number = 2
+static SUBCATCH_INFILTRATION:number = 3
+static SUBCATCH_RUNOFF:number = 4
+static SUBCATCH_GWFLOW:number = 5
+static SUBCATCH_GWELEV:number = 6
+static SUBCATCH_SOILMOISTURE:number = 7
+// NODE result type enums
+static NODE_DEPTH:number = 0
+static NODE_HEAD:number = 1
+static NODE_VOLUME:number = 2
+static NODE_LATFLOW:number = 3
+static NODE_INFLOW:number = 4
+static NODE_OVERFLOW:number = 5
+// LINK result type enums
+static LINK_FLOW:number = 0
+static LINK_DEPTH:number = 1
+static LINK_VELOCITY:number = 2
+static LINK_VOLUME:number = 3
+static LINK_CAPACITY:number = 4
 
 /**
 * @type {JSON}
@@ -894,7 +917,7 @@ unitString(objectType:string, resultIndex:number): string {
 
   let descriptionStrings = SwmmOut.RESULTS[objectType][resultIndex]
   let outString = descriptionStrings +
-                  ' ' + 
+                  ', ' + 
                   outputDataUnitsWords[objectType][resultIndex][unitSystem](flowUnits)
   return outString
 }
@@ -1898,13 +1921,13 @@ processOut(objNames:Array<string>, objectType:number, outputPos:number){
   let results = {}
   objNames.forEach(ID=>{
     let section = {}
-    if(objectType === 0){
+    if(objectType === SwmmOut.SUBCATCH){
       section = this.subcatchmentResults(ID, outputPos, 0)
     }
-    else if(objectType === 1){
+    else if(objectType === SwmmOut.LINK){
       section = this.linkResults(ID, outputPos, 0)
     }
-    else if(objectType === 2){
+    else if(objectType === SwmmOut.NODE){
       section = this.nodeResults(ID, outputPos, 0)
     }
     results = {...results, ...section}

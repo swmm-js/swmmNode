@@ -853,18 +853,14 @@ export class SwmmConvert {
       //!!
       BUILDUP: function(model, section, m) {
         if (m && m.length)
-          // If there is not a BUILDUP array for this 
+          // If there is not a BUILDUP object for this 
           // landuse, create one.
           if(!model[section][m[0]]){
-            model[section][m[0]] = []
+            model[section][m[0]] = {}
           }
-          let thisObj = { 
-            Pollutant: m[1]
-          }
+          let thisObj = {}
           if (m && m.length == 2){
-            model[section][m[0]].push({
-              Pollutant: m[1]
-            })
+            model[section][m[0]][m[1]] = {}
           } else {
             if(m.length > 2){thisObj.Function = m[2];}
             if(thisObj.Function === 'NONE') { // NONE
@@ -897,31 +893,29 @@ export class SwmmConvert {
               thisObj.timeSeries  = m[5];
               thisObj.Normalizer  = m[6];
             }
-            // Push the new BUILDUP object to the array.
-            model[section][m[0]].push(thisObj)
+            // Place the new BUILDUP object in the parent landuse.
+            model[section][m[0]][m[1]] = thisObj
           }
       },  
 
       //==
       WASHOFF: function(model, section, m) {
-        // If there is not a WASHOFF array for this 
+        // If there is not a WASHOFF object for this 
         // landuse, create one.
         if(!model[section][m[0]]){
-          model[section][m[0]] = []
+          model[section][m[0]] = {}
         }
         if (m && m.length == 2)
-          model[section][m[0]].push({
-            Pollutant: m[1]
-        })
-        if (m && m.length > 2)
-          model[section][m[0]].push({
-            Pollutant: m[1].trim(), 
+          model[section][m[0]][m[1]] = {}
+
+        else if (m && m.length > 2)
+          model[section][m[0]][m[1]] ={
             Function: m[2].trim(),
             Coeff1: parseFloat(m[3]) || 0,
             Coeff2: parseFloat(m[4]) || 0,
             Ecleaning: parseFloat(m[5]) || 0,
             Ebmp: m[6]?m[6].trim():''
-          })
+          }
       },  
 
       //==
@@ -2754,7 +2748,7 @@ export class SwmmConvert {
         for (let el in model[secStr][entry]){
           
           inpString += strsPad(entry, 16)
-          inpString += strsPad(rec[el].Pollutant, 16)
+          inpString += strsPad(el, 16)
           if(isValidData(rec[el].Function))
             inpString += strsPad(rec[el].Function, 10)
           if(isValidData(rec[el].Coeff1))
@@ -2765,12 +2759,6 @@ export class SwmmConvert {
             inpString += numsPad(rec[el].Coeff3, 10)
           if(isValidData(rec[el].Normalizer))
             inpString += strsPad(rec[el].Normalizer, 10)
-
-          /*inpString += strsPad(rec[el].Function, 10)
-          inpString += numsPad(rec[el].Coeff1, 10)
-          inpString += numsPad(rec[el].Coeff2, 10)
-          inpString += numsPad(rec[el].Coeff3, 10)
-          inpString += strsPad(rec[el].Normalizer, 10)*/
 
           inpString += '\n';
         }
@@ -2787,7 +2775,7 @@ export class SwmmConvert {
       var rec = model[secStr][entry]
       for (let el in model[secStr][entry]){
         inpString += strsPad(entry, 16)
-        inpString += strsPad(rec[el].Pollutant, 16)
+        inpString += strsPad(el, 16)
         if(isValidData(rec[el].Function))
           inpString += strsPad(rec[el].Function, 10)
         if(isValidData(rec[el].Coeff1))
@@ -2799,11 +2787,6 @@ export class SwmmConvert {
         if(isValidData(rec[el].Ebmp))
           inpString += strsPad(rec[el].Ebmp, 10)
 
-        /*inpString += strsPad(rec[el].Function, 10)
-        inpString += numsPad(rec[el].Coeff1, 10)
-        inpString += numsPad(rec[el].Coeff2, 10)
-        inpString += numsPad(rec[el].Ecleaning, 10)
-        inpString += strsPad(rec[el].Ebmp, 10)*/
         inpString += '\n';
       }
     }
